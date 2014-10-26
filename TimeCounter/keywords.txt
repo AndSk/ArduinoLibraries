@@ -1,0 +1,7 @@
+TimeCounter	KEYWORD1
+setTime		KEYWORD2
+increment	KEYWORD2
+decrement	KEYWORD2
+getSeconds	KEYWORD2
+getMinutes	KEYWORD2
+getHours	KEYWORD2

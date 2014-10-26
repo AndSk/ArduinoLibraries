@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Folders
+bin
+
+# Makefile (use the Arduino.mk makefile)
+Makefile
