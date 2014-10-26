@@ -89,7 +89,7 @@ void clearDisplay()
 /*
   Check if the reset buton is pushed.
  */
-void pool_button_task()
+void poll_button_task()
 {
   if(digitalRead(BUTTON_PIN) == LOW)
     {
@@ -147,11 +147,11 @@ void setup() {
 			  INPUT1_PIN, INPUT2_PIN, INPUT4_PIN, INPUT8_PIN, DP_PIN);
   
   scheduler.createSchedule(1000, -1, true, second_count_task);
-  scheduler.createSchedule(100, -1, true, pool_button_task);
+  scheduler.createSchedule(100, -1, true, poll_button_task);
 
   //Initilise timer interrupts
   Timer1.initialize(1000);
-  Timer1.attachInterrupt(timerCallbackScheduler); // <--- Arduino
+  Timer1.attachInterrupt(timerCallbackScheduler);
   sei();
 }
 
