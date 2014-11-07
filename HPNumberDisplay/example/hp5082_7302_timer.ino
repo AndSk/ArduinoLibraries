@@ -22,31 +22,37 @@
 #include <TimeCounter.h>
 
 //Pin definitions
+namespace IO
+{
+  enum OutPins
+    {
+      TIME_RESET_LED = 13,
+      TIME_LED       = 8,
+      
+      INPUT1         = 14,
+      INPUT2         = 15,
+      INPUT4         = 16,
+      INPUT8         = 17,
+      DP             = 18,
 
-//Status indicators
-#define BUTTON_LED 13
-#define TIME_LED 8
+      ENABLE1        = 7,
+      ENABLE2        = 9,
+      ENABLE3        = 10,
+      ENABLE4        = 19,
+      ENABLE5        = 5,
+    };
 
-//Reset button
-#define BUTTON_PIN 6
-
-//Display inputs
-#define INPUT1_PIN 14
-#define INPUT2_PIN 15
-#define INPUT4_PIN 16
-#define INPUT8_PIN 17
-#define DP_PIN 18
-
-//Latch enable pins
-#define ENABLE1_PIN 7
-#define ENABLE2_PIN 9
-#define ENABLE3_PIN 10
-#define ENABLE4_PIN 19
-#define ENABLE5_PIN 5
+  enum InPins
+    {
+      TIME_RESET = 6
+    };
+  
+  const uint8_t enable_pins[5] = {ENABLE1, ENABLE2, ENABLE3, ENABLE4, ENABLE5};
+}
 
 Scheduler scheduler;
 TimeCounter counter;
-HPNumberDisplay *display;
+HPNumberDisplay display(5, IO::enable_pins, IO::INPUT1, IO::INPUT2, IO::INPUT4, IO::INPUT8, IO::DP);
 
 /*
   Returns the nth digit in a number
@@ -67,11 +73,11 @@ void updateDisplay()
   uint8_t minutes = counter.getMinutes();
   uint8_t seconds = counter.getSeconds();
 
-  display->set(getDigit(hours,   0), false, 0);
-  display->set(getDigit(minutes, 1), true,  1);
-  display->set(getDigit(minutes, 0), false, 2);
-  display->set(getDigit(seconds, 1), true,  3);
-  display->set(getDigit(seconds, 0), false, 4);
+  display.set(getDigit(hours,   0), false, 0);
+  display.set(getDigit(minutes, 1), true,  1);
+  display.set(getDigit(minutes, 0), false, 2);
+  display.set(getDigit(seconds, 1), true,  3);
+  display.set(getDigit(seconds, 0), false, 4);
 }
 
 /*
@@ -79,11 +85,11 @@ void updateDisplay()
  */
 void clearDisplay()
 {
-  display->set(HPNumberDisplay::MINUS, false, 0);
-  display->set(HPNumberDisplay::MINUS, false, 1);
-  display->set(HPNumberDisplay::MINUS, false, 2);
-  display->set(HPNumberDisplay::MINUS, false, 3);
-  display->set(HPNumberDisplay::MINUS, false, 4);
+  display.set(HPNumberDisplay::MINUS, false, 0);
+  display.set(HPNumberDisplay::MINUS, false, 1);
+  display.set(HPNumberDisplay::MINUS, false, 2);
+  display.set(HPNumberDisplay::MINUS, false, 3);
+  display.set(HPNumberDisplay::MINUS, false, 4);
 }
 
 /*
@@ -91,17 +97,17 @@ void clearDisplay()
  */
 void poll_button_task()
 {
-  if(digitalRead(BUTTON_PIN) == LOW)
+  if(digitalRead(IO::TIME_RESET) == LOW)
     {
       //Reset counter and clear the display.
       counter.setTime(0, 0, 0);
       clearDisplay();
 
-      digitalWrite(BUTTON_LED, HIGH);
+      digitalWrite(IO::TIME_RESET_LED, HIGH);
     }
   else
     {
-      digitalWrite(BUTTON_LED, LOW);
+      digitalWrite(IO::TIME_RESET_LED, LOW);
     }
 }
 
@@ -110,7 +116,7 @@ void poll_button_task()
  */
 void second_count_task()
 {
-  digitalWrite(TIME_LED, !(digitalRead(TIME_LED) == HIGH));
+  digitalWrite(IO::TIME_LED, !(digitalRead(IO::TIME_LED) == HIGH));
   counter.increment();
   updateDisplay();
 }
@@ -124,28 +130,10 @@ void timerCallbackScheduler() {
 
 void setup() {
   //Initilise pins
-  pinMode(BUTTON_LED, OUTPUT);
-  pinMode(TIME_LED, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT);
+  pinMode(IO::TIME_RESET_LED, OUTPUT);
+  pinMode(IO::TIME_LED, OUTPUT);
+  pinMode(IO::TIME_RESET, INPUT);
 
-  pinMode(INPUT1_PIN, OUTPUT);
-  pinMode(INPUT2_PIN, OUTPUT);
-  pinMode(INPUT4_PIN, OUTPUT);
-  pinMode(INPUT8_PIN, OUTPUT);
-  pinMode(DP_PIN, OUTPUT);
-
-  pinMode(ENABLE1_PIN, OUTPUT);
-  pinMode(ENABLE2_PIN, OUTPUT);
-  pinMode(ENABLE3_PIN, OUTPUT);
-  pinMode(ENABLE4_PIN, OUTPUT);
-  pinMode(ENABLE5_PIN, OUTPUT);
-
-  //Initilise display
-  uint8_t enable_pins[5] =  {ENABLE1_PIN, ENABLE2_PIN, ENABLE3_PIN, ENABLE4_PIN, ENABLE5_PIN};
-  
-  display = new HPNumberDisplay(5, enable_pins,
-			  INPUT1_PIN, INPUT2_PIN, INPUT4_PIN, INPUT8_PIN, DP_PIN);
-  
   scheduler.createSchedule(1000, -1, true, second_count_task);
   scheduler.createSchedule(100, -1, true, poll_button_task);
 
