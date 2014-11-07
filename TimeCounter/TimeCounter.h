@@ -69,9 +69,9 @@ public:
    */
   bool decrement(uint8_t hours, uint8_t minutes, uint8_t seconds);
 
-  uint8_t getSeconds();
-  uint8_t getMinutes();
-  uint8_t getHours();
+  uint8_t getSeconds() const;
+  uint8_t getMinutes() const;
+  uint8_t getHours() const;
     
 private:
   uint8_t _seconds, _minutes, _hours;

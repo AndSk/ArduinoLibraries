@@ -135,17 +135,17 @@ bool TimeCounter::decrement(uint8_t hours, uint8_t minutes, uint8_t seconds)
 }
   
 
-uint8_t TimeCounter::getSeconds()
+uint8_t TimeCounter::getSeconds() const
 {
   return _seconds;
 }
 
-uint8_t TimeCounter::getMinutes()
+uint8_t TimeCounter::getMinutes() const
 {
   return _minutes;
 }
 
-uint8_t TimeCounter::getHours()
+uint8_t TimeCounter::getHours() const
 {
   return _hours;
 }
