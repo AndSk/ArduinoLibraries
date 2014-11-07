@@ -14,7 +14,7 @@
 
 
 HPNumberDisplay::HPNumberDisplay(uint8_t num_displays,
-				 uint8_t enable_pins[],
+				 const uint8_t enable_pins[],
 				 uint8_t input1_pin,
 				 uint8_t input2_pin,
 				 uint8_t input4_pin,
@@ -25,14 +25,22 @@ HPNumberDisplay::HPNumberDisplay(uint8_t num_displays,
   _i4(input4_pin), _i8(input8_pin),
   _dp(dp_pin)
 {
+  pinMode(_i1, OUTPUT);
+  pinMode(_i2, OUTPUT);
+  pinMode(_i4, OUTPUT);
+  pinMode(_i8, OUTPUT);
+  pinMode(_dp, OUTPUT);
+
   _enable_pins = new uint8_t[num_displays];
           
   for(uint8_t i = 0; i < _num_displays; ++i)
     {
       _enable_pins[i] = enable_pins[i];
+      pinMode(_enable_pins[i], OUTPUT);
       digitalWrite(_enable_pins[i], HIGH);
     }
 
+  //Blank all displays
   for(uint8_t i = 0; i < _num_displays; ++i)
     {
       set(BLANK, false, i);

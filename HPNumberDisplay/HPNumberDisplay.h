@@ -38,7 +38,7 @@ public:
     };
   
     
-  HPNumberDisplay(uint8_t num_displays, uint8_t enable_pins[],
+  HPNumberDisplay(uint8_t num_displays, const uint8_t enable_pins[],
 		  uint8_t input1_pin,uint8_t input2_pin,
 		  uint8_t input4_pin,uint8_t input8_pin,
 		  uint8_t dp_pin);
